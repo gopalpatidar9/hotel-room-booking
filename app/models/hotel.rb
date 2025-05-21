@@ -1,4 +1,4 @@
 class Hotel < ApplicationRecord
   belongs_to :user
-  has_may :rooms, dependent: :destroy
+  has_many :rooms, dependent: :destroy
 end

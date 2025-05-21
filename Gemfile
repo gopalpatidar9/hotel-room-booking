@@ -64,3 +64,5 @@ end
 gem 'rails_admin'
 gem 'devise'
 gem "cssbundling-rails"
+# gem 'devise-jwt' 
+gem 'devise_token_auth'

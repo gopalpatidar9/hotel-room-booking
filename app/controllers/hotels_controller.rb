@@ -1,9 +1,10 @@
 class HotelsController < ApplicationController
-  berfor_action :authenticate_user!
-  berfor_action :set_hotel, only: [:edit, :show, :destroy]
+  skip_before_action :verify_authenticity_token, if: -> { request.format.json? }
+  before_action :authenticate_user!
+  before_action :set_hotel, only: [:update, :show, :destroy]
 
   def index
-    @hotels = Hotel.all
+    @hotels = current_user.hotels
     render json: {hotels: @hotels}
   end
 
@@ -16,7 +17,7 @@ class HotelsController < ApplicationController
     end
   end
   
-  def edit
+  def update
     if @hotel.update(hotel_params)
       render json: {message: "Hotel Updated successfully!", hotel: @hotel}, status: :ok
     else
@@ -50,6 +51,8 @@ class HotelsController < ApplicationController
   end
 
   def hotel_params
-    parmas.require(:hotel).parmit(:hotel_name, :location, :description)
+    params.require(:hotel).permit(:hotel_name, :loaction, :description)
   end
 end
+
+

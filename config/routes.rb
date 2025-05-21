@@ -1,7 +1,26 @@
 Rails.application.routes.draw do
-  devise_for :users
+  mount_devise_token_auth_for 'User', at: 'auth', controllers: {
+    sessions: 'users/sessions'
+  }
+  
+  # devise_for :users, controllers: {
+  #   registrations: 'users/registrations',
+  #   sessions: 'users/sessions'
+  # }
+  
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   devise_for :admin_users
+
+  resources :hotels
+  resources :hotels do
+    resources :rooms do
+      post 'perform_simple_job', to: 'rooms#perform_simple_job'
+    end
+  end
+  
+  resources :users do
+    post 'send_welcom_email', to: 'users#send_welcom_email'
+  end
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.
