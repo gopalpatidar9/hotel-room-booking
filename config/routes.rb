@@ -3,24 +3,42 @@ Rails.application.routes.draw do
     sessions: 'users/sessions'
   }
   
-  # devise_for :users, controllers: {
-  #   registrations: 'users/registrations',
-  #   sessions: 'users/sessions'
-  # }
-  
   mount RailsAdmin::Engine => '/admin', as: 'rails_admin'
   devise_for :admin_users
 
-  resources :hotels
-  resources :hotels do
-    resources :rooms do
-      post 'perform_simple_job', to: 'rooms#perform_simple_job'
+  namespace :api do
+    namespace :v1 do
+      
+      resources :hotels do
+        resources :rooms do
+          collection do
+            post 'perform_simple_job', to: 'rooms#perform_simple_job'
+            # get 'show', to: 'rooms#show_hotel_rooms'
+          end
+        end
+      end
+
+      resources :rooms do
+        post 'book', to: 'bookings#create'
+      end
+      
+      resources :bookings, only: [] do
+        member do
+          delete 'cancel', to: 'bookings#cancle_booking'
+        end
+      end
+    
+      resources :bookings do
+        post 'pay', to: 'payments#create'
+      end
+    
+      resources :users do
+        post 'send_welcom_email', to: 'users#send_welcom_email'
+      end
     end
   end
-  
-  resources :users do
-    post 'send_welcom_email', to: 'users#send_welcom_email'
-  end
+
+
   # Define your application routes per the DSL in https://guides.rubyonrails.org/routing.html
 
   # Reveal health status on /up that returns 200 if the app boots with no exceptions, otherwise 500.

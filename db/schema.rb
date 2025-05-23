@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2025_04_29_065736) do
+ActiveRecord::Schema[8.0].define(version: 2025_05_22_162843) do
   create_table "admin_users", force: :cascade do |t|
     t.string "email", default: "", null: false
     t.string "encrypted_password", default: "", null: false
@@ -27,16 +27,16 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_065736) do
     t.datetime "start_date"
     t.datetime "end_date"
     t.integer "num_guests"
-    t.decimal "total_prcie"
+    t.decimal "total_price"
     t.decimal "gst"
     t.datetime "canceled_at"
-    t.string "payment_method"
-    t.string "payment_status"
     t.string "transaction_id"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "room_id", null: false
     t.integer "user_id", null: false
+    t.integer "payment_method", default: 0
+    t.integer "payment_status", default: 0
     t.index ["room_id"], name: "index_bookings_on_room_id"
     t.index ["user_id"], name: "index_bookings_on_user_id"
   end
@@ -48,13 +48,14 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_065736) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
+    t.string "city"
+    t.string "state"
+    t.string "country"
     t.index ["user_id"], name: "index_hotels_on_user_id"
   end
 
   create_table "payments", force: :cascade do |t|
     t.decimal "amount", precision: 10, scale: 2, default: "0.0"
-    t.string "paymet_method"
-    t.string "payment_status"
     t.datetime "paid_at"
     t.string "stripe_payment_id"
     t.string "stripe_checkout_url"
@@ -62,6 +63,8 @@ ActiveRecord::Schema[8.0].define(version: 2025_04_29_065736) do
     t.datetime "updated_at", null: false
     t.integer "user_id", null: false
     t.integer "booking_id", null: false
+    t.integer "pay_status", default: 0
+    t.integer "pay_method", default: 0
     t.index ["booking_id"], name: "index_payments_on_booking_id"
     t.index ["user_id"], name: "index_payments_on_user_id"
   end

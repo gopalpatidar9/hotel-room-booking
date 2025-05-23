@@ -25,4 +25,12 @@ class Users::SessionsController < DeviseTokenAuth::SessionsController
       render json: { message: "Couldn't find an active session" }, status: :unauthorized
     end
   end
+
+  def resource_params
+    if params[:user]
+      params.require(:user).permit(:email, :password)
+    else
+      params.permit(:email, :password)
+    end
+  end  
 end
