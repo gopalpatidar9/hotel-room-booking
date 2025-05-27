@@ -5,69 +5,65 @@ class Api::V1::RoomsController < ApplicationController
   before_action :set_room , only: [:perform_simple_job, :show, :update, :destroy]
 
   def index
-    @rooms = Room.all 
-    if @rooms
-      render json: {roomes: @rooms}, status: :ok 
+    rooms = Room.all 
+    if rooms.exists?
+      render json: {roomes: rooms}, status: :ok 
     else
-      render json: {message: "Roomes are not avalable"}, status: :not_found
+      render json: {message: "No Roomes"}, status: :not_found
     end
   end
 
   def show_hotel_rooms
-    if current_user.role == "host" && current_user.id == @hotel.user_id
-      @hotel_rooms = @hotel.rooms.all
-      if @hotel_rooms
-        render json: {rooms: @hotel_rooms}, status: :ok 
+    if current_user.role == "host" && @hotel.user_id == current_user.id 
+      hotel_rooms = @hotel.rooms
+      if hotel_rooms.exists?
+        render json: {rooms: hotel_rooms}, status: :ok 
       else
-        render json: {message: "Rooms not avalable"}, status: :not_found
+        render json: {message: "No rooms for this Hotel"}, status: :not_found
       end
     else
-      render json: {error: "Your not authorized"}
+      render json: {error: "Your not authorized to view this rooms"}, status: :unauthorized
     end  
   end
 
   def create
-    if current_user.role == "host" && current_user.id == @hotel.user_id
-      @room = @hotel.rooms.new(room_params)
-      if @room.save
-        render json: {message: "Room was succsefully created", room: @room}, status: :ok
+    if current_user.role == "host" && @hotel.user_id == current_user.id
+      room = @hotel.rooms.new(room_params)
+      if room.save
+        render json: {message: "Room was succsefully created", room: room}, status: :ok
       else
-        render json: {errors: @room.full_messages}, status: :unprocessable_entity  
+        render json: {errors: room.full_messages}, status: :unprocessable_entity  
       end
     else  
-      render json: {error: "Your not authorized"}  
+      render json: {error: "Your not authorized to create this room"}, status: :unauthorized
     end  
   end
   
   def show
-    if @room
-      render json: {room: @room}
-    else
-      render json: {error: "Room not found"}, status: :not_found
-    end
+    render json: {room: @room}, status: :ok
   end
 
   def update
-    if current_user.role == "host" && current_user.id == @room.hotel.user_id
+    if current_user.role == "host" && @room.hotel.user_id == current_user.id
       if @room.update(room_params)
-        render json: {message: "Room updated sucessfuly"}, status: :ok
+        render json: {message: "Room updated sucessfuly", room: @room}, status: :ok
       else
         redner json: {erros: @room.errros.full_messages}, status: :unprocessable_entity
       end
     else 
-      render json: {error: "Your not authorized"}  
+      render json: {error: "Your not authorized to edit this room"}, status: :unauthorized  
     end     
   end
 
   def destroy
-    if current_user.role == "host" && current_user.id == @room.hotel.user_id
+    if current_user.role == "host" && @room.hotel.user_id == current_user.id
       if @room.destroy
         render json: {message: "#{@room.title} Deleted sucsessfully"}, status: :ok
       else
         render json: {error: @room.erros.full_messages}, status: :unprocessable_entity
       end
     else 
-      render json: {error: "Your not authrized"}
+      render json: {error: "Your not authrized to Delete this room"}, status: :unauthorized
     end
   end
 
@@ -82,7 +78,7 @@ class Api::V1::RoomsController < ApplicationController
   def set_hotel
     @hotel = Hotel.find_by(id: params[:hotel_id])
     if @hotel.nil?
-      render json: {error: "Hotel not found"}
+      render json: {error: "Hotel not found"}, status: :not_found
     end
   end
 

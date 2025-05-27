@@ -20,6 +20,8 @@ Rails.application.routes.draw do
 
       resources :rooms do
         post 'book', to: 'bookings#create'
+        get 'bookings', to: 'bookings#show_room_booking'
+        get 'payments', to: 'payments#show_room_payments'
       end
       
       resources :bookings, only: [] do
@@ -31,9 +33,13 @@ Rails.application.routes.draw do
       resources :bookings do
         post 'pay', to: 'payments#create'
       end
-    
+      
+      resources :payments, only: [:index, :show]
+
       resources :users do
         post 'send_welcom_email', to: 'users#send_welcom_email'
+        get 'profile', to: 'users#user_profile'
+        post 'edit_profile', to: 'users#edit_user_profile'
       end
     end
   end
